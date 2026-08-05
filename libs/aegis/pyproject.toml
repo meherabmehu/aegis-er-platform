@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aegis-core"
+version = "0.1.0"
+description = "AEGIS-ER core decision engine: priority scoring, routing, assignment, explainability."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "meherabmehu" }]
+dependencies = [
+    "numpy>=1.24",
+    "ortools>=9.7",
+    "pydantic>=2.5",
+    "geojson>=3.1",
+]
+
+[project.optional-dependencies]
+server = [
+    "fastapi>=0.110",
+    "uvicorn[standard]>=0.27",
+    "httpx>=0.27",
+    "redis>=5.0",
+    "psycopg[binary]>=3.1",
+]
+sim = [
+    "httpx>=0.27",
+    "numpy>=1.24",
+]
+dev = [
+    "pytest>=8.0",
+    "pytest-cov>=4.1",
+    "hypothesis>=6.98",
+    "httpx>=0.27",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["aegis*"]
