@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AEGIS-ER · National Emergency Operations Center</title>
+<link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><defs><radialGradient id='g' cx='30%25' cy='30%25'><stop offset='0%25' stop-color='%237ff9ff'/><stop offset='100%' stop-color='%230078a8'/></radialGradient></defs><rect width='64' height='64' rx='12' fill='%2304101f'/><circle cx='32' cy='32' r='22' fill='url(%23g)'/><path d='M20 32h24M32 20v24' stroke='%2304101f' stroke-width='5' stroke-linecap='round'/></svg>" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<link rel="stylesheet" href="./style.css?v=20260806h" />
+</head>
+<body>
+
+<div class="vignette" aria-hidden="true"></div>
+
+<!-- ============ TOP BAR ============ -->
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-logo" aria-hidden="true">
+      <svg viewBox="0 0 64 64" width="28" height="28">
+        <rect width="64" height="64" rx="10" fill="#051525"/>
+        <circle cx="32" cy="32" r="18" fill="#00e0ff" opacity="0.15"/>
+        <circle cx="32" cy="32" r="13" fill="none" stroke="#00e0ff" stroke-width="1.5"/>
+        <path d="M20 32h24M32 20v24" stroke="#00e0ff" stroke-width="3" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="brand-text">
+      <div class="brand-title">AEGIS-ER</div>
+      <div class="brand-sub">BANGLADESH · NATIONAL EMERGENCY OPERATIONS CENTER</div>
+    </div>
+  </div>
+
+  <div class="topbar-center">
+    <div class="status-rail">
+      <div class="status-pill ok"><span class="dot"></span><span class="label">SYSTEM NOMINAL</span></div>
+      <div class="status-pill ok" id="pill-ws"><span class="dot"></span><span class="label">TELEMETRY LIVE</span></div>
+      <div class="status-pill" id="pill-sim"><span class="dot warn"></span><span class="label">SIM STANDBY</span></div>
+      <div class="status-pill info" id="pill-region"><span class="dot info"></span><span class="label">8 HUBS · 131 UNITS</span></div>
+    </div>
+    <div class="clock" id="clock">--:--:-- <span class="clock-tz">BST</span></div>
+  </div>
+
+  <div class="topbar-right">
+    <button class="top-btn" id="btn-demo" title="Demo Mode — guided walkthrough">
+      <span class="tb-ico">▶</span><span>DEMO MODE</span>
+    </button>
+  </div>
+</header>
+
+<!-- ============ KPI STRIP ============ -->
+<section class="kpi-strip" aria-label="Key performance indicators">
+  <div class="kpi-card kpi-critical" data-kind="critical">
+    <div class="kpi-icon">🚨</div>
+    <div class="kpi-body">
+      <div class="kpi-value-row">
+        <div class="kpi-value mono" id="kpi-critical">0</div>
+        <div class="kpi-trend" id="trend-critical">—</div>
+      </div>
+      <div class="kpi-label">CRITICAL</div>
+    </div>
+    <div class="kpi-spark-wrap"><canvas class="kpi-spark" id="spark-critical"></canvas></div>
+  </div>
+  <div class="kpi-card kpi-active">
+    <div class="kpi-icon">⚠️</div>
+    <div class="kpi-body">
+      <div class="kpi-value-row">
+        <div class="kpi-value mono" id="kpi-active">0</div>
+        <div class="kpi-trend" id="trend-active">—</div>
+      </div>
+      <div class="kpi-label">ACTIVE</div>
+    </div>
+    <div class="kpi-spark-wrap"><canvas class="kpi-spark" id="spark-active"></canvas></div>
+  </div>
+  <div class="kpi-card kpi-avail">
+    <div class="kpi-icon">🚑</div>
+    <div class="kpi-body">
+      <div class="kpi-value-row">
+        <div class="kpi-value mono" id="kpi-available">0</div>
+        <div class="kpi-trend" id="trend-available">—</div>
+      </div>
+      <div class="kpi-label">AVAILABLE</div>
+    </div>
+    <div class="kpi-spark-wrap"><canvas class="kpi-spark" id="spark-available"></canvas></div>
+  </div>
+  <div class="kpi-card kpi-busy">
+    <div class="kpi-icon">🔥</div>
+    <div class="kpi-body">
+      <div class="kpi-value-row">
+        <div class="kpi-value mono" id="kpi-busy">0</div>
+        <div class="kpi-trend" id="trend-busy">—</div>
+      </div>
+      <div class="kpi-label">DEPLOYED</div>
+    </div>
+    <div class="kpi-spark-wrap"><canvas class="kpi-spark" id="spark-busy"></canvas></div>
+  </div>
+  <div class="kpi-card kpi-eta">
+    <div class="kpi-icon">⏱</div>
+    <div class="kpi-body">
+      <div class="kpi-value-row">
+        <div class="kpi-value mono"><span id="kpi-eta">—</span><span class="kpi-unit">s</span></div>
+        <div class="kpi-trend" id="trend-eta">—</div>
+      </div>
+      <div class="kpi-label">AVG ETA</div>
+    </div>
+    <div class="kpi-spark-wrap"><canvas class="kpi-spark" id="spark-eta"></canvas></div>
+  </div>
+  <div class="kpi-card kpi-util">
+    <div class="kpi-icon">📊</div>
+    <div class="kpi-body">
+      <div class="kpi-value-row">
+        <div class="kpi-value mono"><span id="kpi-util">0</span><span class="kpi-unit">%</span></div>
+        <div class="kpi-trend" id="trend-util">—</div>
+      </div>
+      <div class="kpi-label">UTILIZATION</div>
+    </div>
+    <div class="kpi-spark-wrap"><canvas class="kpi-spark" id="spark-util"></canvas></div>
+  </div>
+  <div class="kpi-card kpi-resolved">
+    <div class="kpi-icon">✅</div>
+    <div class="kpi-body">
+      <div class="kpi-value-row">
+        <div class="kpi-value mono" id="kpi-resolved">0</div>
+        <div class="kpi-trend ok" id="trend-resolved">—</div>
+      </div>
+      <div class="kpi-label">RESOLVED</div>
+    </div>
+    <div class="kpi-spark-wrap"><canvas class="kpi-spark" id="spark-resolved"></canvas></div>
+  </div>
+</section>
+
+<!-- ============ MAIN GRID ============ -->
+<main class="grid">
+
+  <!-- ============ LEFT RAIL: slim priority queue ============ -->
+  <aside class="rail rail-left">
+    <div class="rail-head">
+      <div class="rail-title"><span class="rail-dot"></span>INCIDENT QUEUE</div>
+      <div class="rail-meta" id="queue-count">0</div>
+    </div>
+
+    <!-- Incident type filters -->
+    <div class="filter-row" id="incident-filters">
+      <button class="filter-pill active" data-f="all">ALL</button>
+      <button class="filter-pill crit" data-f="critical">S5</button>
+      <button class="filter-pill" data-f="medical">MED</button>
+      <button class="filter-pill" data-f="fire">FIRE</button>
+      <button class="filter-pill" data-f="flood">FLD</button>
+      <button class="filter-pill" data-f="collapse">CLP</button>
+      <button class="filter-pill" data-f="crash">CRASH</button>
+      <button class="filter-pill muted" data-f="resolved">✓</button>
+    </div>
+
+    <div class="queue-list" id="priority-queue"></div>
+
+    <button class="more-btn" id="more-incidents" style="display:none">
+      <span id="more-count">+0 more</span>
+    </button>
+
+    <div class="rail-foot">
+      <div class="sev-legend">
+        <i class="s s5"></i><span>CRIT</span>
+        <i class="s s4"></i><span>HIGH</span>
+        <i class="s s3"></i><span>MED</span>
+        <i class="s s2"></i><span>LOW</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============ CENTER: HERO MAP ============ -->
+  <section class="map-hero" id="map-wrap">
+    <div id="map"></div>
+
+    <!-- Sector label (top center) -->
+    <div class="sector-badge">
+      <div class="sb-main">BANGLADESH · TACTICAL OPERATIONS</div>
+      <div class="sb-sub">Real-time situational awareness · EPSG:3857</div>
+    </div>
+
+    <!-- Layer toggles (top-left on map) -->
+    <div class="layer-panel" id="layer-panel">
+      <div class="lp-title">LAYERS</div>
+      <label class="lp-toggle"><input type="checkbox" data-layer="ambulances" checked><span></span><i class="lp-dot amb"></i>Ambulances / Paramedics</label>
+      <label class="lp-toggle"><input type="checkbox" data-layer="fire" checked><span></span><i class="lp-dot fire"></i>Fire / Rescue</label>
+      <label class="lp-toggle"><input type="checkbox" data-layer="heli" checked><span></span><i class="lp-dot heli"></i>Helicopters</label>
+      <label class="lp-toggle"><input type="checkbox" data-layer="hospitals" checked><span></span><i class="lp-dot hosp"></i>Hospitals</label>
+      <label class="lp-toggle"><input type="checkbox" data-layer="routes" checked><span></span><i class="lp-dot route"></i>Routes</label>
+      <label class="lp-toggle"><input type="checkbox" data-layer="eocs" checked><span></span><i class="lp-dot eoc"></i>EOCs</label>
+    </div>
+
+    <!-- Zoom/fly controls (right on map) -->
+    <div class="map-tools">
+      <button class="mt-btn" id="btn-fly-critical" title="Jump to critical">🎯 CRITICAL</button>
+      <button class="mt-btn" id="btn-zoom-in" title="Zoom in">＋</button>
+      <button class="mt-btn" id="btn-zoom-out" title="Zoom out">−</button>
+    </div>
+
+    <!-- Scale -->
+    <div class="map-scale" id="map-scale"></div>
+
+    <!-- Hovered/selected incident popover on map (custom) -->
+    <div class="map-pop" id="map-pop" style="display:none"></div>
+  </section>
+
+  <!-- ============ RIGHT RAIL: Control + AI panel ============ -->
+  <aside class="rail rail-right">
+
+    <!-- AI DECISION PANEL (always visible) -->
+    <div class="xai-panel" id="xai-panel">
+      <div class="rail-head xai-head">
+        <div class="rail-title"><span class="rail-dot ai"></span>AI DECISION</div>
+        <div class="rail-meta" id="xai-meta">awaiting selection</div>
+      </div>
+
+      <div class="xai-empty" id="xai-empty">
+        <div class="xai-empty-ico">◉</div>
+        <div class="xai-empty-title">Select an incident</div>
+        <div class="xai-empty-sub">Click any red incident pin on the map, or click an item in the priority queue, to inspect the solver's full decision rationale.</div>
+        <div class="xai-hint">↑ Click any pin or queue item ↑</div>
+      </div>
+
+      <div class="xai-body hidden" id="xai-card">
+        <div class="xai-top">
+          <div class="xai-badge" id="xai-badge">S3</div>
+          <div class="xai-ident">
+            <div class="xai-title" id="xai-title">—</div>
+            <div class="xai-sub" id="xai-sub">—</div>
+          </div>
+          <div class="conf-wrap">
+            <div class="conf-ring">
+              <svg viewBox="0 0 64 64" width="64" height="64">
+                <circle cx="32" cy="32" r="26" class="ring-bg"/>
+                <circle cx="32" cy="32" r="26" class="ring-fg" id="xai-ring"/>
+              </svg>
+              <div class="conf-val mono" id="xai-ring-val">0%</div>
+            </div>
+            <div class="conf-lbl">CONF</div>
+          </div>
+        </div>
+
+        <div class="xai-grid">
+          <div class="xai-cell">
+            <div class="xc-label">RESOURCE</div>
+            <div class="xc-value mono" id="xai-unit">—</div>
+          </div>
+          <div class="xai-cell">
+            <div class="xc-label">ETA</div>
+            <div class="xc-value mono" id="xai-eta">—</div>
+          </div>
+          <div class="xai-cell">
+            <div class="xc-label">DISTANCE</div>
+            <div class="xc-value mono" id="xai-distance">—</div>
+          </div>
+          <div class="xai-cell">
+            <div class="xc-label">HOSPITAL</div>
+            <div class="xc-value mono" id="xai-hospital">—</div>
+          </div>
+        </div>
+
+        <div class="xai-facts">
+          <div class="xf"><span class="xf-k">SEVERITY</span><b id="xai-severity">—</b></div>
+          <div class="xf"><span class="xf-k">AFFECTED</span><b id="xai-affected">—</b></div>
+          <div class="xf"><span class="xf-k">WEATHER</span><b id="xai-weather">—</b></div>
+          <div class="xf"><span class="xf-k">ROADS</span><b id="xai-roads">—</b></div>
+          <div class="xf"><span class="xf-k">CREW</span><b id="xai-crew">—</b></div>
+          <div class="xf"><span class="xf-k">SPEED</span><b id="xai-speed">—</b></div>
+        </div>
+
+        <div class="rationale">
+          <div class="rat-title">✓ RATIONALE</div>
+          <ul id="xai-reasons"></ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTROLS -->
+    <div class="ctrl-panel">
+      <div class="rail-head">
+        <div class="rail-title"><span class="rail-dot op"></span>OPERATIONS</div>
+      </div>
+      <div class="primary-ctrls">
+        <button class="big-btn primary" id="btn-sim">
+          <span class="bb-ico">▶</span><span class="bb-label">START DISASTER</span>
+        </button>
+        <div class="mini-ctrls">
+          <button class="mini-btn" id="btn-tick" title="Advance 5 ticks">↻ ADVANCE</button>
+          <button class="mini-btn" id="btn-plan" title="Force re-plan">⚙ REPLAN</button>
+          <button class="mini-btn danger" id="btn-reset" title="Reset world">⟲ RESET</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHAOS (collapsible) -->
+    <div class="chaos-panel">
+      <button class="chaos-toggle" id="chaos-toggle">
+        <span>⚠ INJECT CHAOS</span>
+        <span class="chev">▾</span>
+      </button>
+      <div class="chaos-body" id="chaos-body">
+        <div class="chaos-grid">
+          <button class="chaos" data-chaos="road">
+            <div class="ci">🚧</div><div class="cl">ROAD CLOSED</div><div class="cs">network down</div>
+          </button>
+          <button class="chaos" data-chaos="storm">
+            <div class="ci">⛈</div><div class="cl">STORM</div><div class="cs">−40% mobility</div>
+          </button>
+          <button class="chaos" data-chaos="hfull">
+            <div class="ci">⛝</div><div class="cl">HOSP FULL</div><div class="cs">capacity 0</div>
+          </button>
+          <button class="chaos" data-chaos="fail">
+            <div class="ci">✖</div><div class="cl">UNIT FAIL</div><div class="cs">asset offline</div>
+          </button>
+        </div>
+        <div class="chaos-status" id="chaos-status">System stable — no active disruptions.</div>
+      </div>
+    </div>
+
+    <!-- MANUAL REPORT (collapsed by default) -->
+    <div class="report-panel">
+      <button class="report-toggle" id="report-toggle">
+        <span>＋ MANUAL INCIDENT</span><span class="chev">▾</span>
+      </button>
+      <div class="report-body" id="report-body">
+        <form id="inc-form" class="form-compact">
+          <div class="form-row">
+            <label>TYPE
+              <select name="type">
+                <option value="medical">Medical</option>
+                <option value="crash">Road Crash</option>
+                <option value="fire">Fire</option>
+                <option value="flood">Flood</option>
+                <option value="collapse">Collapse</option>
+                <option value="rescue">Water Rescue</option>
+                <option value="hazmat">Hazmat</option>
+              </select>
+            </label>
+            <label>SEV
+              <select name="severity">
+                <option value="1">S1</option>
+                <option value="2">S2</option>
+                <option value="3" selected>S3</option>
+                <option value="4">S4</option>
+                <option value="5">S5</option>
+              </select>
+            </label>
+          </div>
+          <div class="form-row">
+            <label>AFFECTED <input type="number" name="affected_count" min="1" value="2"/></label>
+            <label>NOTES <input type="text" name="notes" placeholder="e.g. trapped"/></label>
+          </div>
+          <div class="form-row coords">
+            <label>LAT <input type="number" step="0.0001" name="lat" placeholder="click map"/></label>
+            <label>LON <input type="number" step="0.0001" name="lon" placeholder="click map"/></label>
+          </div>
+          <button type="submit" class="big-btn danger">⌖ DISPATCH EMERGENCY</button>
+        </form>
+      </div>
+    </div>
+
+  </aside>
+</main>
+
+<!-- ============ BOTTOM: LIVE ACTIVITY FEED ============ -->
+<section class="feed-wrap">
+  <div class="feed-head">
+    <div class="feed-title"><span class="feed-dot"></span>LIVE ACTIVITY FEED</div>
+    <div class="feed-meta" id="feed-count">0 events</div>
+  </div>
+  <div class="feed" id="feed"></div>
+</section>
+
+<!-- Toast system -->
+<div id="toast-wrap" class="toast-wrap" aria-live="polite"></div>
+
+<!-- DEMO MODE OVERLAY -->
+<div class="demo-overlay" id="demo-overlay" style="display:none">
+  <div class="demo-badge">DEMO MODE</div>
+  <div class="demo-step" id="demo-step">
+    <div class="ds-num" id="ds-num">1</div>
+    <div class="ds-text" id="ds-text">Initializing guided walkthrough…</div>
+  </div>
+  <div class="demo-progress"><div class="dp-fill" id="dp-fill"></div></div>
+  <button class="demo-exit" id="demo-exit">✕ EXIT DEMO</button>
+</div>
+
+<!-- Highlight ring for demo -->
+<div class="demo-highlight" id="demo-highlight" style="display:none"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="./config.js?v=20260806h"></script>
+<script src="./app.js?v=20260806h"></script>
+</body>
+</html>
