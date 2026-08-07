@@ -1,0 +1,10 @@
+# AEGIS-ER — run from repo root:
+#   pip install -e libs/aegis
+#   pip install -r requirements.txt
+fastapi>=0.110
+uvicorn[standard]>=0.27
+pydantic>=2.5
+httpx>=0.27
+numpy>=1.24
+ortools>=9.7
+-e libs/aegis

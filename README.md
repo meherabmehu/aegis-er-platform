@@ -57,7 +57,7 @@ cd aegis-er-platform
 
 # 2. Install dependencies (Python 3.10+)
 pip install -e libs/aegis
-pip install -r services/assignment-solver/requirements.txt
+pip install -r requirements.txt
 
 # 3. Run
 make run
