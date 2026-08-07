@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 300" width="800" height="300">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#04101f"/>
+      <stop offset="100%" stop-color="#0a2540"/>
+    </linearGradient>
+    <linearGradient id="cyan" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#66f0ff"/>
+      <stop offset="100%" stop-color="#0aa6c4"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="300" fill="url(#bg)"/>
+  <text x="30" y="40" fill="#00d9ff" font-family="monospace" font-size="14" letter-spacing="2">AEGIS-ER · COMMAND CENTER</text>
+  <text x="30" y="60" fill="#7d95b1" font-family="sans-serif" font-size="11">Live · 8 Divisions · 131 Resources · 16 Hospitals</text>
+
+  <!-- KPI tiles -->
+  <g>
+    <rect x="30" y="75" width="110" height="50" rx="8" fill="#0c1f36" stroke="#1d3759"/>
+    <rect x="30" y="75" width="3" height="50" fill="#ff4f6d"/>
+    <text x="43" y="93" fill="#7d95b1" font-size="9" font-family="sans-serif">ACTIVE</text>
+    <text x="43" y="115" fill="#fff" font-size="22" font-weight="bold" font-family="sans-serif">12</text>
+    <rect x="150" y="75" width="110" height="50" rx="8" fill="#0c1f36" stroke="#1d3759"/>
+    <rect x="150" y="75" width="3" height="50" fill="#ffcc4d"/>
+    <text x="163" y="93" fill="#7d95b1" font-size="9" font-family="sans-serif">MEAN ETA</text>
+    <text x="163" y="115" fill="#fff" font-size="22" font-weight="bold" font-family="sans-serif">3:12</text>
+    <rect x="270" y="75" width="110" height="50" rx="8" fill="#0c1f36" stroke="#1d3759"/>
+    <rect x="270" y="75" width="3" height="50" fill="#39e08a"/>
+    <text x="283" y="93" fill="#7d95b1" font-size="9" font-family="sans-serif">UTILIZATION</text>
+    <text x="283" y="115" fill="#fff" font-size="22" font-weight="bold" font-family="sans-serif">48%</text>
+    <rect x="390" y="75" width="110" height="50" rx="8" fill="#0c1f36" stroke="#1d3759"/>
+    <rect x="390" y="75" width="3" height="50" fill="#4ea8ff"/>
+    <text x="403" y="93" fill="#7d95b1" font-size="9" font-family="sans-serif">RESOLVED</text>
+    <text x="403" y="115" fill="#fff" font-size="22" font-weight="bold" font-family="sans-serif">87</text>
+  </g>
+
+  <!-- Map -->
+  <rect x="30" y="140" width="470" height="140" rx="8" fill="#06121f" stroke="#1d3759"/>
+  <!-- Bangladesh silhouette (very rough) -->
+  <path d="M120,170 C140,160 180,155 220,160 C270,165 320,170 360,175 C400,180 450,185 470,200 C460,230 420,260 370,265 C310,270 230,265 170,250 C120,235 80,210 100,190 Z"
+        fill="#0f2540" stroke="#1d3759" stroke-width="1"/>
+  <!-- Incidents -->
+  <circle cx="240" cy="200" r="5" fill="#ff4f6d"><animate attributeName="r" values="5;11;5" dur="1.5s" repeatCount="indefinite"/></circle>
+  <circle cx="320" cy="215" r="4" fill="#ff4f6d"/>
+  <circle cx="280" cy="240" r="6" fill="#ff4f6d"><animate attributeName="r" values="6;13;6" dur="1.2s" repeatCount="indefinite"/></circle>
+  <circle cx="180" cy="225" r="3" fill="#ff4f6d"/>
+  <!-- Resources -->
+  <circle cx="230" cy="205" r="3" fill="#00d9ff"/>
+  <circle cx="236" cy="208" r="3" fill="#00d9ff"/>
+  <circle cx="245" cy="195" r="3" fill="#00d9ff"/>
+  <circle cx="312" cy="218" r="3" fill="#00d9ff"/>
+  <circle cx="273" cy="234" r="3" fill="#00d9ff"/>
+  <circle cx="290" cy="247" r="3" fill="#00d9ff"/>
+  <circle cx="285" cy="230" r="3" fill="#00d9ff"/>
+  <circle cx="175" cy="220" r="3" fill="#00d9ff"/>
+  <!-- Routes -->
+  <line x1="230" y1="205" x2="240" y2="200" stroke="#39e08a" stroke-width="2" stroke-dasharray="4 3"/>
+  <line x1="312" y1="218" x2="320" y2="215" stroke="#39e08a" stroke-width="2" stroke-dasharray="4 3"/>
+  <line x1="273" y1="234" x2="280" y2="240" stroke="#39e08a" stroke-width="2" stroke-dasharray="4 3"/>
+  <line x1="290" y1="247" x2="280" y2="240" stroke="#39e08a" stroke-width="2" stroke-dasharray="4 3"/>
+  <!-- Hospitals -->
+  <rect x="250" y="208" width="5" height="5" fill="#4ea8ff"/>
+  <rect x="340" y="225" width="5" height="5" fill="#4ea8ff"/>
+  <rect x="200" y="240" width="5" height="5" fill="#4ea8ff"/>
+
+  <!-- Side panel -->
+  <rect x="520" y="140" width="250" height="140" rx="8" fill="#0c1f36" stroke="#1d3759"/>
+  <text x="535" y="160" fill="#00d9ff" font-family="monospace" font-size="10" letter-spacing="1">INCIDENT QUEUE</text>
+  <g font-family="sans-serif" font-size="10" fill="#d7e5f3">
+    <rect x="530" y="170" width="230" height="18" fill="#102a45"/>
+    <text x="538" y="182">CRASH · S5 · 8 affected</text>
+    <text x="730" y="182" fill="#00d9ff">2:04</text>
+    <rect x="530" y="190" width="230" height="18" fill="#0a1b2f"/>
+    <text x="538" y="202">FIRE · S4 · 3 affected</text>
+    <text x="730" y="202" fill="#ffcc4d">3:48</text>
+    <rect x="530" y="210" width="230" height="18" fill="#102a45"/>
+    <text x="538" y="222">FLOOD · S4 · 12 affected</text>
+    <text x="730" y="222" fill="#ff4f6d">5:12</text>
+    <rect x="530" y="230" width="230" height="18" fill="#0a1b2f"/>
+    <text x="538" y="242">MEDICAL · S3 · 1 affected</text>
+    <text x="730" y="242" fill="#39e08a">1:18</text>
+    <rect x="530" y="250" width="230" height="18" fill="#102a45"/>
+    <text x="538" y="262">COLLAPSE · S5 · 6 trapped</text>
+    <text x="730" y="262" fill="#ff4f6d">en-route</text>
+  </g>
+
+  <text x="30" y="292" fill="#7d95b1" font-family="monospace" font-size="9">solver: greedy→hungarian→cp-sat→lns · 200ms budget · optimality gap 3.4%</text>
+</svg>
